@@ -61,7 +61,6 @@
                     <includes>
                         <include>**/*Runner.java</include>
                     </includes>
-                    <!-- Tag ile koşu yapmak istersen -->
                     <systemPropertyVariables>
                         <cucumber.filter.tags>@appointment</cucumber.filter.tags>
                     </systemPropertyVariables>
