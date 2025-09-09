@@ -12,15 +12,12 @@ public class Config {
     }
 
     public static String get(String key, String def){
-        // 1) JVM parametresi (-Dusername=Test) varsa al
         String sys = System.getProperty(key);
         if (sys != null) return sys;
 
-        // 2) config.properties dosyasından al
         String prop = p.getProperty(key);
         if (prop != null) return prop;
 
-        // 3) yoksa default dön
         return def;
     }
 }

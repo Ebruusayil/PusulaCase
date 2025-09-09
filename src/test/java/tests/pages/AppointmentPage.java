@@ -5,19 +5,17 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.time.Duration;
+import java.util.List;
 
 public class AppointmentPage {
     private final WebDriver d = DriverFactory.getDriver();
     private final WebDriverWait w = new WebDriverWait(d, Duration.ofSeconds(15));
 
-    // --- Modüller ekranı: Randevu kutucuğu (senin verdiğin)
     private final By appointmentModule = By.xpath("/html/body/main/section/div[1]/div/div/div/div[2]/div/div/a[1]");
 
-    // --- Takvimde tıklanacak slot (senin verdiğin)
     private final By targetSlotPrimary  = By.xpath("//*[@id='Schedule-196cc4f1-dfce-415c-b0b3-a396c4cd0da3']/div[4]/div/table/tbody/tr[2]/td[2]/div/table/tbody/tr[18]/td[4]");
     private final By targetSlotFallback = By.xpath("//div[starts-with(@id,'Schedule-')]/div[4]//table//tbody/tr[2]//table//tbody/tr[18]/td[4]");
 
-    // --- Hasta arama paneli / input & buton (senin verdiğin)
     private final By patientSearchInput = By.xpath("//*[@id='85515ea3-f057-4b07-a2bd-a4361660f99e']");
     private final By patientSearchBtn   = By.xpath("//*[@id='00000000-0000-0000-0000-000000000002']/div[2]/button");
     private final By dateInput    = By.xpath("//*[@id='appointment-date']");
@@ -47,9 +45,9 @@ public class AppointmentPage {
         );
     }
 
-    private final By filterOpenBtn   = By.xpath("/html/body/main/section/div[1]/div/div[1]/div/button[1]"); // Filtrele
-    private final By sourcesField    = By.xpath("/html/body/main/section/div[1]/div/div[2]/div/div[1]/div/div[3]/div/div"); // Kaynaklar alanı
-    private final By sourcesCloseOne = By.xpath("/html/body/main/section/div[1]/div/div[2]/div/div[1]/div/div[3]/div/div/span[3]"); // tek X (hover ile)
+    private final By filterOpenBtn   = By.xpath("/html/body/main/section/div[1]/div/div[1]/div/button[1]");
+    private final By sourcesField    = By.xpath("/html/body/main/section/div[1]/div/div[2]/div/div[1]/div/div[3]/div/div");
+    private final By sourcesCloseOne = By.xpath("/html/body/main/section/div[1]/div/div[2]/div/div[1]/div/div[3]/div/div/span[3]");
     private final By acceptFilterBtn = By.xpath("//button[normalize-space()='Kabul et']");
     private final By anyChipClose = By.cssSelector("div[id*='div'][class*='chips'], .e-chips .e-chips-close, .e-chip .e-chip-close, span.e-chips-close");
 
@@ -65,9 +63,11 @@ public class AppointmentPage {
     }
 
     public void clearDoctorFilterTokens(){
+        sleep(150);
+
         WebElement field = w.until(ExpectedConditions.visibilityOfElementLocated(sourcesField));
         new org.openqa.selenium.interactions.Actions(d).moveToElement(field).perform();
-        sleep(150);
+        sleep(1500);
 
         try {
             WebElement x = w.until(ExpectedConditions.elementToBeClickable(sourcesCloseOne));
@@ -83,7 +83,7 @@ public class AppointmentPage {
         }
     }
 
-    public void selectDoctorAndApply(String doctorName){
+    /*public void selectDoctorAndApply(String doctorName){
 
         WebElement field = w.until(ExpectedConditions.elementToBeClickable(sourcesField));
         scrollIntoView(field);
@@ -98,7 +98,31 @@ public class AppointmentPage {
         try { accept.click(); } catch (ElementClickInterceptedException e){ jsClick(accept); }
 
         sleep(600);
+    }*/
+    public void selectDoctorAndApply(String doctorName) {
+        WebElement field = w.until(ExpectedConditions.elementToBeClickable(sourcesField));
+        scrollIntoView(field);
+
+        try { field.click(); } catch (ElementClickInterceptedException e){ jsClick(field); }
+        sleep(600);
+        w.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("ul[role='listbox'], .e-popup-open")));
+        sleep(600);
+        List<WebElement> options = d.findElements(By.xpath("//li[starts-with(normalize-space(.),'Doç. Dr.')]"));
+
+        if (options.isEmpty()) {
+            throw new NoSuchElementException("Hiç doktor seçeneği bulunamadı!");
+        }
+        WebElement lastOpt = options.get(options.size() - 1);
+        scrollIntoView(lastOpt);
+        try { lastOpt.click(); } catch (Exception ex) { jsClick(lastOpt); }
+        WebElement accept = w.until(ExpectedConditions.elementToBeClickable(acceptFilterBtn));
+        scrollIntoView(accept);
+        try { accept.click(); } catch (ElementClickInterceptedException e){ jsClick(accept); }
+
+        sleep(600);
     }
+
 
 
     public void clickTargetSlot() {
@@ -200,7 +224,7 @@ public class AppointmentPage {
     }
     private java.time.LocalDateTime clampToBusinessHours(java.time.LocalDateTime dt){
         java.time.LocalTime start = java.time.LocalTime.of(8, 0);
-        java.time.LocalTime end   = java.time.LocalTime.of(18, 0); // üst sınır (hariç)
+        java.time.LocalTime end   = java.time.LocalTime.of(18, 0);
 
         java.time.LocalDate d = dt.toLocalDate();
         java.time.LocalTime t = dt.toLocalTime();
@@ -217,7 +241,7 @@ public class AppointmentPage {
     public void fillDateTimeAndDurationForNow(int minutes){
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
         int m = now.getMinute();
-        int rounded = ((m + 4) / 5) * 5; // yukarı yuvarla
+        int rounded = ((m + 4) / 5) * 5;
         if (rounded >= 60) now = now.plusHours(1).withMinute(0).withSecond(0).withNano(0);
         else now = now.withMinute(rounded).withSecond(0).withNano(0);
 
@@ -320,9 +344,9 @@ public class AppointmentPage {
         if (value == null || value.isEmpty()) return false;
         try {
             int year = -1;
-            if (value.matches("\\d{4}-\\d{2}-\\d{2}")) {            // 2025-09-02
+            if (value.matches("\\d{4}-\\d{2}-\\d{2}")) {
                 year = Integer.parseInt(value.substring(0,4));
-            } else if (value.matches("\\d{2}\\.\\d{2}\\.\\d{4}")) {  // 02.09.2025
+            } else if (value.matches("\\d{2}\\.\\d{2}\\.\\d{4}")) {
                 year = Integer.parseInt(value.substring(6,10));
             } else {
                 java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\d{4})").matcher(value);
@@ -357,7 +381,7 @@ public class AppointmentPage {
                 el.sendKeys(Keys.TAB);
             }
             Thread.sleep(120);
-            // Doğrula
+
             String v = el.getAttribute("value");
             if (v == null || !v.startsWith(hhmm)) throw new RuntimeException("time mismatch");
         } catch (Exception e) {
@@ -433,7 +457,7 @@ public class AppointmentPage {
     public void assertAppointmentSaved() {
 
         try {
-            new WebDriverWait(d, Duration.ofSeconds(2))
+            new WebDriverWait(d, Duration.ofSeconds(5))
                     .until(ExpectedConditions.visibilityOfElementLocated(toastSuccess));
             return;
         } catch (Exception ignored) {}
@@ -490,6 +514,7 @@ public class AppointmentPage {
         return By.xpath(xp);
     }
     public void openAppointmentCard(String patientName){
+
         try { Thread.sleep(50); } catch (InterruptedException ignored) {}
 
         WebElement card = null;
@@ -510,7 +535,7 @@ public class AppointmentPage {
         scrollIntoView(card);
         safeClick(card);
 
-        try { Thread.sleep(200); } catch (InterruptedException ignored) {}
+        try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
         w.until(driver ->
                 !d.findElements(btnCheckInText).isEmpty()
                         || !d.findElements(btnAdmissionText).isEmpty()
@@ -525,6 +550,8 @@ public class AppointmentPage {
     private final By checkInBtn = By.cssSelector("button[data-testid='status-button']");
     private void sleep(long ms){ try { Thread.sleep(ms); } catch (InterruptedException ignored) {} }
     public void openAppointmentCardSimple(){
+
+
         WebElement card = w.until(ExpectedConditions.elementToBeClickable(apptCardWrapper));
         scrollIntoView(card);
         try { card.click(); } catch (ElementClickInterceptedException e) { jsClick(card); }
@@ -546,7 +573,7 @@ public class AppointmentPage {
 
 
     public void saveAdmissionSimple(){
-
+        sleep(1000);
         WebElement save = w.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//button[@type='submit' and (normalize-space()='Kaydet' or contains(@class,'e-primary'))]")));
         scrollIntoView(save);
@@ -683,9 +710,9 @@ public class AppointmentPage {
     }
     public void deleteAppointmentSimple(){
         clickDeleteOnCard();
-        try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+        try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
         confirmDeleteYes();
-        try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+        try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
         confirmOk();
     }
 
