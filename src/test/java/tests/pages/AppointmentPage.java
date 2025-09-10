@@ -238,29 +238,28 @@ public class AppointmentPage {
         return java.time.LocalDateTime.of(d, t);
     }
 
-    public void fillDateTimeAndDurationForNow(int minutes){
+    public void fillDateTimeAndDurationForNow() {
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
         int m = now.getMinute();
         int rounded = ((m + 4) / 5) * 5;
-        if (rounded >= 60) now = now.plusHours(1).withMinute(0).withSecond(0).withNano(0);
-        else now = now.withMinute(rounded).withSecond(0).withNano(0);
+
+        if (rounded >= 60) {
+            now = now.plusHours(1).withMinute(0).withSecond(0).withNano(0);
+        } else {
+            now = now.withMinute(rounded).withSecond(0).withNano(0);
+        }
 
         java.time.LocalDateTime slot = clampToBusinessHours(now);
 
-
-        boolean dateIsToday = isDateInputToday(dateInput);
-
-        try { Thread.sleep(120); } catch (InterruptedException ignored) {}
-
-        if (!dateIsToday) {
+        if (!isDateInputToday(dateInput)) {
             setDateSmart(dateInput, slot.toLocalDate());
         }
 
         setTimeSmart(timeInput, slot.toLocalTime());
-        setSelectOrInput(durationElem, String.valueOf(minutes));
 
-        try { Thread.sleep(120); } catch (InterruptedException ignored) {}
+        sleep(150);
     }
+
     private boolean isDateInputToday(By locator){
         try {
             var el = w.until(ExpectedConditions.visibilityOfElementLocated(locator));

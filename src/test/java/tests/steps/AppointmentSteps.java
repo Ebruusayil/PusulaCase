@@ -29,16 +29,16 @@ public class AppointmentSteps {
     public void randevu_formunda_hasta_aranir_ve_secilir(String hastaAdi) {
         appt.searchAndSelectPatient(hastaAdi);
     }
-    @When("randevu tarihi bugün, saat en yakın ve süre {int} dakika olarak girilir")
-    public void randevu_tarih_saat_sure_otomatik(int dk) {
-        appt.fillDateTimeAndDurationForNow(dk);
+    @When("randevu tarihi bugün ve saat en yakın olarak girilir")
+    public void randevu_tarih_saat_sure_otomatik() {
+        appt.fillDateTimeAndDurationForNow();
     }
     @When("{string} isimli hasta Doğum Tarihi: {string} kayıtlıdır")
     public void isimli_hasta_dogum_tarihi_kayitlidir(String ad, String dt) { /* no-op */ }
 
     @When("{string} ve {string} ile randevu oluşturulur")
     public void ve_ile_randevu_olusturulur(String doktor, String departman) {
-        appt.fillDateTimeAndDurationForNow(30);
+        appt.fillDateTimeAndDurationForNow();
         appt.saveAppointment();
     }
 

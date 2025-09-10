@@ -14,7 +14,7 @@ Feature: Randevu akışı
     When takvimde hedef slota tıklanır
     And randevu formunda hasta "ebru ebru" aranır ve seçilir
     And "ebru ebru" isimli hasta Doğum Tarihi: "01.01.2001" kayıtlıdır
-    And randevu tarihi bugün, saat en yakın ve süre 30 dakika olarak girilir
+    And randevu tarihi bugün ve saat en yakın olarak girilir
     And "Doç. Dr.Ziya Bey" ve "Çocuk Doktoru" ile randevu oluşturulur
     Then randevu başarıyla oluşturulmalıdır
     When randevu kartina tiklanir
