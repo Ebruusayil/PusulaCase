@@ -58,6 +58,17 @@ public class AppointmentPage {
         scrollIntoView(btn);
         try { btn.click(); } catch (ElementClickInterceptedException e){ jsClick(btn); }
         sleep(400);
+        By branchDropdown = By.xpath("/html/body/main/section/div[1]/div/div[2]/div/div[1]/div/div[1]/span");
+        By branchOption = By.xpath("//li[normalize-space()='Nişantaşı']");
+
+        WebElement branch = w.until(ExpectedConditions.elementToBeClickable(branchDropdown));
+        scrollIntoView(branch);
+        try { branch.click(); } catch (ElementClickInterceptedException e) { jsClick(branch); }
+
+        WebElement branchOpt = w.until(ExpectedConditions.elementToBeClickable(branchOption));
+        scrollIntoView(branchOpt);
+        try { branchOpt.click(); } catch (Exception e) { jsClick(branchOpt); }
+        sleep(400);
     }
 
     public void clearDoctorFilterTokens() {
@@ -117,6 +128,8 @@ public class AppointmentPage {
 
         sleep(600);
     }
+
+
 
 
 
