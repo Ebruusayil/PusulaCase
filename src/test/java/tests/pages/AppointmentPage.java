@@ -14,9 +14,6 @@ public class AppointmentPage {
 
     private final By appointmentModule = By.xpath("/html/body/main/section/div[1]/div/div/div/div[2]/div/div/a[1]");
 
-    private final By targetSlotPrimary  = By.xpath("//*[@id='Schedule-196cc4f1-dfce-415c-b0b3-a396c4cd0da3']/div[4]/div/table/tbody/tr[2]/td[2]/div/table/tbody/tr[18]/td[4]");
-    private final By targetSlotFallback = By.xpath("//div[starts-with(@id,'Schedule-')]/div[4]//table//tbody/tr[2]//table//tbody/tr[18]/td[4]");
-
     private final By patientSearchInput = By.xpath("//*[@id='85515ea3-f057-4b07-a2bd-a4361660f99e']");
     private final By patientSearchBtn   = By.xpath("//*[@id='00000000-0000-0000-0000-000000000002']/div[2]/button");
     private final By dateInput    = By.xpath("//*[@id='appointment-date']");

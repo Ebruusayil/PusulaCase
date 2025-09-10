@@ -78,7 +78,6 @@ public class AppointmentSteps {
         Assert.assertEquals(actual, beklenen, "Randevu durumu eşleşmedi!");
     }
 
-
     @When("randevu kartı silinir")
     public void randevu_karti_silinir(){
         appt.deleteAppointmentSimple();
