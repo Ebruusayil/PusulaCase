@@ -1,5 +1,6 @@
 package tests.pages;
 
+import org.openqa.selenium.interactions.Actions;
 import tests.utils.DriverFactory;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
@@ -62,43 +63,40 @@ public class AppointmentPage {
         sleep(400);
     }
 
-    public void clearDoctorFilterTokens(){
-        sleep(150);
+    public void clearDoctorFilterTokens() {
+        sleep(300);
 
-        WebElement field = w.until(ExpectedConditions.visibilityOfElementLocated(sourcesField));
-        new org.openqa.selenium.interactions.Actions(d).moveToElement(field).perform();
-        sleep(1500);
+        w.until(ExpectedConditions.visibilityOfElementLocated(sourcesField));
+        new Actions(d).moveToElement(d.findElement(sourcesField)).perform();
+        sleep(300);
 
-        try {
-            WebElement x = w.until(ExpectedConditions.elementToBeClickable(sourcesCloseOne));
-            try { x.click(); } catch (Exception ex){ jsClick(x); }
-            sleep(100);
-        } catch (TimeoutException ignored){}
+        boolean found;
+        int safety = 0;
+        do {
+            found = false;
+            List<WebElement> chips = d.findElements(anyChipClose);
 
-        java.util.List<WebElement> closes = d.findElements(anyChipClose);
-        for (WebElement c : closes){
-            if (!c.isDisplayed()) continue;
-            try { c.click(); } catch (Exception ex){ jsClick(c); }
-            sleep(80);
-        }
+            for (WebElement chip : chips) {
+                try {
+                    if (chip.isDisplayed()) {
+                        scrollIntoView(chip);
+                        try {
+                            chip.click();
+                        } catch (Exception e) {
+                            jsClick(chip);
+                        }
+                        sleep(200);
+                        found = true;
+                        break;
+                    }
+                } catch (StaleElementReferenceException ignored) {}
+            }
+            safety++;
+        } while (found && safety < 20);
+
+        System.out.println("Doktor filtreleri temizlendi.");
     }
 
-    /*public void selectDoctorAndApply(String doctorName){
-
-        WebElement field = w.until(ExpectedConditions.elementToBeClickable(sourcesField));
-        scrollIntoView(field);
-        try { field.click(); } catch (ElementClickInterceptedException e){ jsClick(field); }
-
-        WebElement opt = w.until(ExpectedConditions.elementToBeClickable(doctorOption(doctorName)));
-        scrollIntoView(opt);
-        try { opt.click(); } catch (ElementClickInterceptedException e){ jsClick(opt); }
-
-        WebElement accept = w.until(ExpectedConditions.elementToBeClickable(acceptFilterBtn));
-        scrollIntoView(accept);
-        try { accept.click(); } catch (ElementClickInterceptedException e){ jsClick(accept); }
-
-        sleep(600);
-    }*/
     public void selectDoctorAndApply(String doctorName) {
         WebElement field = w.until(ExpectedConditions.elementToBeClickable(sourcesField));
         scrollIntoView(field);
@@ -429,6 +427,7 @@ public class AppointmentPage {
     }
 
     public void saveAppointment() {
+
         By[] candidates = new By[]{ saveBtnExact, saveBtnText, saveBtnGeneric };
 
         boolean clicked = false;
